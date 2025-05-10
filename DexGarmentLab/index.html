@@ -109,12 +109,12 @@
             <sup>*</sup> indicates equal contributions
           </div>
           <div class="button-container">
-            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-file"></i>&emsp14;PDF</a>
-            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="ai ai-arxiv"></i>&emsp14;arXiv</a>
+            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-file"></i>&emsp14;arXiv</a>
+            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="ai ai-arxiv"></i>&emsp14;Project Page</a>
             <!-- <a href="https://youtu.be/2S8YhBdLdww" target="_blank" class="button"><i class="fa-light fa-film"></i>&emsp14;Video</a> -->
             <!-- <a href="https://x.com/wenlong_huang/status/1829135436717142319" target="_blank" class="button"><i class="fa-brands fa-x-twitter"></i>&emsp14;tl;dr</a> -->
-            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-code"></i>&emsp14;Code</a>
-            <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-folder"></i>&emsp14;Data</a>
+            <a href="https://github.com/wayrise/DexGarmentLab" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-code"></i>&emsp14;Code</a>
+            <a href="https://huggingface.co/datasets/wayrise/DexGarmentLab/tree/main" target="_blank" class="button" style="background-color: #f2f2f2;border: transparent;"><i class="fa-light fa-folder"></i>&emsp14;Data</a>
           </div>
         </div>
       </div>
@@ -122,7 +122,7 @@
   </div>
 </section>
 
-<section class="hero teaser">
+<!-- <section class="hero teaser">
   <div class="container is-max-widescreen">
     <div class="hero-body">
       <div class="container">
@@ -140,7 +140,7 @@
         </h2>
       </div>
     </div>
-  </div>
+  </div> -->
 
 <br>
 <div class="container is-max-widescreen">
@@ -149,17 +149,19 @@
     <h2 class="title is-3" style="margin-bottom: 0.5em; color:#ad1010">Abstract</h2>
     <div class="content has-text-justified">
       <p>
-        Data scaling has revolutionized fields like natural language processing and computer vision, 
-        providing models with remarkable generalization capabilities. In this paper, we investigate whether similar data scaling laws exist in robotics, 
-        particularly in robotic manipulation, and whether appropriate data scaling can yield single-task robot policies that can be deployed zero-shot for any object within the same category in any environment.
-        To this end, we conduct a comprehensive empirical study on data scaling in imitation learning. By collecting data across numerous environments and objects, 
-        we study how a policy's generalization performance changes with the number of training environments, objects, and demonstrations. 
-        Throughout our research, we collect over 40,000 demonstrations and execute more than 15,000 real-world robot rollouts under a rigorous evaluation protocol. 
-        Our findings reveal several intriguing results: the generalization performance of the policy follows a roughly <b>power-law</b> relationship with the number of environments and objects. 
-        The <b>diversity</b> of environments and objects is far more important than the absolute number of demonstrations; once the number of demonstrations per environment 
-        or object reaches a certain threshold, additional demonstrations have minimal effect. Based on these insights, we propose an efficient data collection strategy. 
-        With four data collectors working for one afternoon, we collect sufficient data to enable the policies for two tasks to achieve approximately 90% success rates in novel environments with unseen objects.
-      </p>
+          Garment manipulation is a critical challenge due to the diversity in garment categories, geometries, and deformations. 
+          Despite this, humans can effortlessly handle garments, thanks to the dexterity of our hands. 
+          However, existing research in the field has struggled to replicate this level of dexterity, primarily hindered by the lack of realistic simulations of dexterous garment manipulation.
+          Therefore, we propose <b>DexGarmentLab</b>, the first environment specifically designed for dexterous (especially bimanual) garment manipulation, 
+          which features large-scale high-quality 3D assets for 15 task scenarios, and refines simulation techniques tailored for garment modeling to reduce the sim-to-real gap. 
+          Previous data collection typically relies on teleoperation or training expert reinforcement learning (RL) policies, which are labor-intensive and inefficient.
+          In this paper, we leverage garment structural correspondence to automatically generate a dataset with diverse trajectories using only a single expert demonstration, significantly reducing manual intervention.
+          However, even extensive demonstrations cannot cover the infinite states of garments, which necessitates the exploration of new algorithms. 
+          To improve generalization across diverse garment shapes and deformations, we propose a Hierarchical gArment-manipuLation pOlicy (HALO).
+          It first identifies transferable affordance points to accurately locate the manipulation area, then generates generalizable trajectories to complete the task.
+          Through extensive experiments and detailed analysis of our method and baseline, we demonstrate that HALO consistently outperforms existing methods, 
+          successfully generalizing to previously unseen instances even with significant variations in shape and deformation where others fail.
+        </p>
     </div>
   </div>
 </div>
