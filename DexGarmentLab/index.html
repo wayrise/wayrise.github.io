@@ -196,7 +196,7 @@
 
   <!-- vedio (default hidden) -->
   <div id="workflowContent" class="has-text-centered" style="display: none;">
-    <video controls muted autoplay loop controlsList="nodownload" style="max-width: 100%; height: auto;">
+    <video controls muted autoplay loop controlsList="nodownload" width="99%">
       <source src="media/videos/Teaser_Workflow.mp4" type="video/mp4">
     </video>
   </div>
@@ -248,13 +248,36 @@
 <br>
 <div class="rows is-centered has-text-centered">
   <h2 class="title is-3" style="margin-bottom: 0.5em; color:#ad1010">Automated Data Collection</h2>
-  <img src="media/images/Data_Collection.jpg" class="method-image" />
+  <!-- <img src="media/images/Data_Collection.jpg" class="method-image" /> -->
   <!-- <div class="columns is-vcentered  is-centered">
     <video id="teaser" autoplay muted loop  height="90%" width="90%">
       <source src="media/videos/curve.mp4"
               type="video/mp4">
     </video>
   </div> -->
+  <!-- button -->
+  <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
+    <button class="button is-outlined" id="btn-static_1"
+      style="color: #ad1010; border-color: #ad1010;" onclick="showStatic_1()">
+      Static
+    </button>
+    <button class="button is-outlined" id="btn-workflow_1"
+      style="color: #ad1010; border-color: #ad1010;" onclick="showWorkflow_1()">
+      Workflow
+    </button>
+  </div>
+
+  <!-- image (default visible) -->
+  <div id="staticContent_1" class="has-text-centered">
+    <img src="media/images/Data_Collection.jpg" class="method-image" style="max-width: 100%;" />
+  </div>
+
+  <!-- vedio (default hidden) -->
+  <div id="workflowContent_1" class="has-text-centered" style="display: none;">
+    <video controls muted autoplay loop controlsList="nodownload" width="99%">
+      <source src="media/videos/Data_Workflow.mp4" type="video/mp4">
+    </video>
+  </div>
   <br>
   <p class="content has-text-justified" style="margin-bottom: 0.6em">
     <b>Automated Data Collection Pipeline: </b>
@@ -742,6 +765,36 @@
 
   // initial Highlight Static
   highlightButton('static');
+</script>
+
+<script>
+  function showStatic_1() {
+    document.getElementById('staticContent_1').style.display = 'block';
+    document.getElementById('workflowContent_1').style.display = 'none';
+    highlightButton_1('static');
+  }
+
+  function showWorkflow_1() {
+    document.getElementById('staticContent_1').style.display = 'none';
+    document.getElementById('workflowContent_1').style.display = 'block';
+    highlightButton_1('workflow');
+  }
+
+  function highlightButton_1(active) {
+    const btnStatic_1 = document.getElementById('btn-static_1');
+    const btnWorkflow_1 = document.getElementById('btn-workflow_1');
+
+    if (active === 'static') {
+      btnStatic_1.classList.add('is-info');
+      btnWorkflow_1.classList.remove('is-info');
+    } else {
+      btnWorkflow_1.classList.add('is-info');
+      btnStatic_1.classList.remove('is-info');
+    }
+  }
+
+  // 初始状态高亮 static
+  highlightButton_1('static');
 </script>
 
 <style>
