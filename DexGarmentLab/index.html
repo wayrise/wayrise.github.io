@@ -532,7 +532,7 @@
   </div>
 </footer>
 
-<script>
+<!-- <script>
   document.getElementById('shuffle-video').addEventListener('click', function() {
     var envSelect = document.getElementById('env-selection');
     var taskSelect = document.getElementById('task-selection');
@@ -561,6 +561,48 @@
     video.src = "media/videos/test-wild-videos/" + env_id + "/" + 
                 task_name + "/" + object_id + ".mp4";
     video.play();
+  }
+</script> -->
+
+<script>
+  const videoContainer = document.getElementById("video-container");
+  const taskSelect = document.getElementById("task-selection");
+
+  document.getElementById("shuffle-video").addEventListener("click", function () {
+    const options = taskSelect.options;
+    const randomIndex = Math.floor(Math.random() * options.length);
+    taskSelect.selectedIndex = randomIndex;
+    updateVideos();
+  });
+
+  function updateVideos() {
+    const task = taskSelect.value;
+    videoContainer.innerHTML = ""; // 清空当前视频区域
+
+    if (task === "wear_glove") {
+      // 单个视频居中显示
+      videoContainer.className = "columns is-centered";
+      videoContainer.innerHTML = `
+        <div class="column is-4 has-text-centered">
+          <video controls muted autoplay loop controlsList="nodownload" width="99%">
+            <source src="media/videos/data_collection/${task}/0.mp4" type="video/mp4">
+          </video>
+        </div>
+      `;
+    } else {
+      // 三个视频并排显示
+      videoContainer.className = "columns";
+      for (let i = 0; i < 3; i++) {
+        const column = document.createElement("div");
+        column.className = "column has-text-centered";
+        column.innerHTML = `
+          <video controls muted autoplay loop controlsList="nodownload" width="99%">
+            <source src="media/videos/data_collection/${task}/${i}.mp4" type="video/mp4">
+          </video>
+        `;
+        videoContainer.appendChild(column);
+      }
+    }
   }
 </script>
 
