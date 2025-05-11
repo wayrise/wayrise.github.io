@@ -477,7 +477,31 @@
 
       <div class="container has-text-centered">
         <h2 class="title is-3" style="margin-bottom: 0.5em; color:#ad1010">Gneralizable Policy (HALO)</h2>
-        <img src="media/images/Policy.jpg" class="method-image" />
+        <!-- <img src="media/images/Policy.jpg" class="method-image" /> -->
+        <!-- button -->
+        <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
+          <button class="button is-outlined" id="btn-static_2"
+            style="color: #ad1010; border-color: #ad1010;" onclick="showStatic_2()">
+            Static
+          </button>
+          <button class="button is-outlined" id="btn-workflow_2"
+            style="color: #ad1010; border-color: #ad1010;" onclick="showWorkflow_2()">
+            Workflow
+          </button>
+        </div>
+
+        <!-- image (default visible) -->
+        <div id="staticContent_2" class="has-text-centered">
+          <img src="media/images/Policy.jpg" class="method-image" style="max-width: 100%;" />
+        </div>
+
+        <!-- vedio (default hidden) -->
+        <div id="workflowContent_2" class="has-text-centered" style="display: none;">
+          <video controls muted autoplay loop controlsList="nodownload" width="99%">
+            <source src="media/videos/Policy_Workflow.mp4" type="video/mp4">
+          </video>
+        </div>
+        <br>
         <p class="content" style="margin-bottom: 1.5em; text-align: left;">
           We adopt hierarchical structure to implement Generalizable Policy (HALO), achieving better generalization in garment manipulation than previous imitation learning algorithms, 
           which consists of two stages:
@@ -795,6 +819,36 @@
 
   // 初始状态高亮 static
   highlightButton_1('static');
+</script>
+
+<script>
+  function showStatic_2() {
+    document.getElementById('staticContent_2').style.display = 'block';
+    document.getElementById('workflowContent_2').style.display = 'none';
+    highlightButton_2('static');
+  }
+
+  function showWorkflow_2() {
+    document.getElementById('staticContent_2').style.display = 'none';
+    document.getElementById('workflowContent_2').style.display = 'block';
+    highlightButton_2('workflow');
+  }
+
+  function highlightButton_2(active) {
+    const btnStatic_2 = document.getElementById('btn-static_2');
+    const btnWorkflow_2 = document.getElementById('btn-workflow_2');
+
+    if (active === 'static') {
+      btnStatic_2.classList.add('is-info');
+      btnWorkflow_2.classList.remove('is-info');
+    } else {
+      btnWorkflow_2.classList.add('is-info');
+      btnStatic_2.classList.remove('is-info');
+    }
+  }
+
+  // 初始状态高亮 static
+  highlightButton_2('static');
 </script>
 
 <style>
