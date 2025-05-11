@@ -366,7 +366,7 @@
 
 </div>
 
-<!-- <br>
+<br>
 <br>
 <br>
 <br>
@@ -382,46 +382,35 @@
 
   <div class="container block is-centered">
     <div class="columns is-centered">
-      <div class="column is-2" style="width: 22%;">
-          <div class="select" style="display: block;">
-              <select id="env-selection" style="width: 100%;" onchange="SelectTestVideo()">
-                  <option value="env_1">Env 1 (Iron Cabinet)</option>
-                  <option value="env_2">Env 2 (Wooden Podium)</option>
-                  <option value="env_3">Env 3 (Black Workbench)</option>
-                  <option value="env_4">Env 4 (Two Chairs)</option>
-                  <option value="env_5">Env 5 (Cart)</option>
-                  <option value="env_6">Env 6 (Workstaion)</option>
-                  <option value="env_7">Env 7 (Meeting Room 1)</option>
-                  <option value="env_8">Env 8 (Meeting Room 2)</option>
-              </select>
-          </div>
-      </div>
-      <div class="column is-2" style="width: 20%;">
-          <div class="select" style="display: block;">
-              <select id="task-selection" style="width: 100%;" onchange="SelectTestVideo()">
-                <option value="pour_water">Pour Water</option>
-                <option value="pick_place_mouse">Mouse Arrangement</option>
-                <option value="fold_towel">Fold Towels</option>
-                <option value="unplug">Unplug Charge</option>
-              </select>
-          </div>
-      </div>
-      <div class="column is-2" style="width: 17%;">
-          <div class="select" style="display: block;"  onchange="SelectTestVideo()">
-              <select id="object-selection" style="width: 100%;">
-                <option value="1">Unseen Object 1</option>
-                <option value="2">Unseen Object 2</option>
-              </select>
-          </div>
+      <div class="column is-3">
+        <div class="select is-fullwidth">
+          <select id="task-selection" onchange="updateVideos()">
+            <option value="fling_dress">fling_dress</option>
+            <option value="fling_tops">fling_tops</option>
+            <option value="fling_trousers">fling_trousers</option>
+            <option value="fold_tops">fold_tops</option>
+            <option value="fold_dress">fold_dress</option>
+            <option value="fold_trousers">fold_trousers</option>
+            <option value="hang_coat" selected>hang_coat</option>
+            <option value="hang_dress">hang_dress</option>
+            <option value="hang_tops">hang_tops</option>
+            <option value="hang_trousers">hang_trousers</option>
+            <option value="wear_baseballcap">wear_baseballcap</option>
+            <option value="wear_bowlhat">wear_bowlhat</option>
+            <option value="wear_scarf">wear_scarf</option>
+            <option value="wear_glove">wear_glove</option>
+            <option value="store_tops">store_tops</option>
+          </select>
+        </div>
       </div>
       <div class="column is-2">
         <button class="button is-info is-outlined" id="shuffle-video" style="width: 100%; color: #ad1010; border-color: #ad1010;">
-            <span class="icon">
-                <ion-icon name="shuffle-outline" role="img" class="md hydrated"></ion-icon>
-            </span>
-            <span>Shuffle</span>
+          <span class="icon">
+            <ion-icon name="shuffle-outline" role="img" class="md hydrated"></ion-icon>
+          </span>
+          <span>Shuffle</span>
         </button>
-    </div>
+      </div>
     </div>
   </div>
 
@@ -434,7 +423,7 @@
       </p>
     </div>
   </div>
-</div> -->
+</div>
 
 <br>
 <br>
@@ -493,84 +482,7 @@
           </video>
         </div>
       </div>
-
-      <!-- <div class="columns">
-        <div class="column has-text-centered">
-          <video id="dist1"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/3.mp4" 
-            type="video/mp4">
-          </video>
-        </div> -->
-
-        <!-- <div class="column has-text-centered">
-          <video id="dist2"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/4.mp4" 
-            type="video/mp4">
-          </video>
-        </div>
-      </div>
-
-      <div class="columns">
-        <div class="column has-text-centered">
-          <video id="dist1"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/6.mp4" 
-            type="video/mp4">
-          </video>
-        </div>
-
-        <div class="column has-text-centered">
-          <video id="dist2"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/5.mp4" 
-            type="video/mp4">
-          </video>
-        </div>
-      </div>
-
-      <div class="columns">
-        <div class="column has-text-centered">
-          <video id="dist1"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/7.mp4" 
-            type="video/mp4">
-          </video>
-        </div>
-
-        <div class="column has-text-centered">
-          <video id="dist2"
-            controls
-            muted
-            autoplay
-            loop controlsList="nodownload"
-            width="99%">
-            <source src="media/videos/wild-autonomous-skills/8.mp4" 
-            type="video/mp4">
-          </video>
-        </div> -->
-      </div>
+    </div>
   </div>
 </section>
 
