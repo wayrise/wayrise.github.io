@@ -177,23 +177,26 @@
               type="video/mp4">
     </video>
   </div> -->
-  <div style="display: flex; justify-content: center; margin-bottom: 1em;">
-    <label style="margin-right: 1em;">
-      <input type="radio" name="viewMode" value="static" checked onchange="toggleContent()"> Static
-    </label>
-    <label>
-      <input type="radio" name="viewMode" value="workflow" onchange="toggleContent()"> Workflow
-    </label>
+  <!-- button -->
+  <div style="display: flex; justify-content: center; gap: 1em; margin-bottom: 1em;">
+    <button class="button is-outlined" id="btn-static"
+      style="color: #ad1010; border-color: #ad1010;" onclick="showStatic()">
+      Static
+    </button>
+    <button class="button is-outlined" id="btn-workflow"
+      style="color: #ad1010; border-color: #ad1010;" onclick="showWorkflow()">
+      Workflow
+    </button>
   </div>
 
-  <!-- 图片内容（默认显示） -->
+  <!-- img (default visible) -->
   <div id="staticContent" class="has-text-centered">
     <img src="media/images/Teaser.jpg" class="method-image" style="max-width: 100%;" />
   </div>
 
-  <!-- 视频内容（默认隐藏） -->
+  <!-- vedio (default hidden) -->
   <div id="workflowContent" class="has-text-centered" style="display: none;">
-    <video controls muted autoplay loop controlsList="download" width="99%">
+    <video controls muted autoplay loop controlsList="nodownload" style="max-width: 100%; height: auto;">
       <source src="media/videos/Teaser_Workflow.mp4" type="video/mp4">
     </video>
   </div>
@@ -712,19 +715,33 @@
     }
   }
 
-  function toggleContent() {
-    const selected = document.querySelector('input[name="viewMode"]:checked').value;
-    const staticDiv = document.getElementById('staticContent');
-    const workflowDiv = document.getElementById('workflowContent');
+  function showStatic() {
+    document.getElementById('staticContent').style.display = 'block';
+    document.getElementById('workflowContent').style.display = 'none';
+    highlightButton('static');
+  }
 
-    if (selected === 'static') {
-      staticDiv.style.display = 'block';
-      workflowDiv.style.display = 'none';
+  function showWorkflow() {
+    document.getElementById('staticContent').style.display = 'none';
+    document.getElementById('workflowContent').style.display = 'block';
+    highlightButton('workflow');
+  }
+
+  function highlightButton(active) {
+    const btnStatic = document.getElementById('btn-static');
+    const btnWorkflow = document.getElementById('btn-workflow');
+
+    if (active === 'static') {
+      btnStatic.classList.add('is-info');
+      btnWorkflow.classList.remove('is-info');
     } else {
-      staticDiv.style.display = 'none';
-      workflowDiv.style.display = 'block';
+      btnWorkflow.classList.add('is-info');
+      btnStatic.classList.remove('is-info');
     }
   }
+
+  // initial Highlight Static
+  highlightButton('static');
 </script>
 
 <style>
