@@ -433,10 +433,8 @@
         <h2 class="title is-3" style="margin-bottom: 0.5em; color:#ad1010">Gneralizable Policy (HALO)</h2>
         <img src="media/images/Policy.jpg" class="method-image" />
         <p class="content" style="margin-bottom: 1.5em; text-align: left;">
-          Traditional-IL-based trajectories fail to accurately reach the target manipulation points on garments with new shapes and deformations, 
-          while also being unable to generate suitable trajectories based on the garment's own shape and structure, ultimately leading to manipulation failures.
-          <br>
-          To address this issue, We adopt hierarchical structure to implement Generalizable Policy (HALO), which consists of two stages:
+          We adopt hierarchical structure to implement Generalizable Policy (HALO), achieving better generalization in garment manipulation than previous imitation learning algorithms, 
+          which consists of two stages:
           <br>
           &nbsp;&nbsp; <b>Stage &#8544;</b>: We use <b>GAM</b> to generate generalizable affordance points, which will be used for robots to locate and move to target area.
           <br>
@@ -445,13 +443,10 @@
           <u>interaction-object point cloud</u>, <u>environment point cloud</u> and <u>robot joint states</u> as condition to generate joint actions 
           (including 24 DOF for each hand and 6 DOF for each arm, totally 60 DOF).
           <br>
-          <b>HALO</b> leverages affordance (for locating garment manipulation areas) and diffusion method (for generating trajectories based on garment and scene), 
-          achieving better generalization in garment manipulation than previous imitation learning algorithms. For detailed analysis, please refer to our paper.
-          <br>
-          The following <b>real-world setup diagrams and whole-procedure videos</b> show the execution of HALO.
+          Please refer to paper for detailed analysis. Here we show the real-world setup and execution of HALO.
         </p>
 
-        <h3 class="title is-3" style="margin-bottom: 0.5em; color:#e67979">Real-World Setup</h3>
+        <h3 class="title is-3" style="margin-bottom: 0.5em; color:#e67979; font-size: 32px;">Real-World Setup</h3>
 
         <div class="column has-text-centered">
           <figure>
@@ -470,7 +465,7 @@
 
           <div class="column has-text-centered">
             <figure>
-              <img src="media/images/hang_test_sample.png" class="method-image" />
+              <img src="media/images/hang_test_sample.jpg" class="method-image" />
               <figcaption style="margin-top: 0.5em;">Hang Tops Task Samples</figcaption>
             </figure>
           </div>
@@ -486,13 +481,13 @@
 
           <div class="column has-text-centered">
             <figure>
-              <img src="media/images/scarf_test_sample.png" class="method-image" />
+              <img src="media/images/scarf_test_sample.jpg" class="method-image" />
               <figcaption style="margin-top: 0.5em;">Wear Scarf Task Samples</figcaption>
             </figure>
           </div>
         </div>
 
-        <h3 class="title is-3" style="margin-bottom: 0.5em; color:#e67979; font-size: 24px;">Real-World Videos</h3>
+        <h3 class="title is-3" style="margin-bottom: 0.5em; color:#e67979; font-size: 32px;">Real-World Videos</h3>
 
 
 
