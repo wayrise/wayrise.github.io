@@ -3,19 +3,42 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Euren Wang - academic homepage">
-    <title>Euren Wang</title>
+    <meta name="description" content="Yuran Wang - academic homepage">
+    <meta name="theme-color" content="#ffffff">
+    <title>Yuran Wang</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Ma+Shan+Zheng&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@500;600;700&family=Ma+Shan+Zheng&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
+    <div class="dot-background" data-dot-background aria-hidden="true">
+      <canvas data-dot-grid></canvas>
+    </div>
+    <a class="skip-link" href="#home">Skip to content</a>
+
+    <section class="intro" aria-label="Welcome to Yuran Wang's academic homepage">
+      <video class="intro-video" data-intro-video muted loop playsinline webkit-playsinline preload="none" poster="assets/freedom-poster.jpg" aria-hidden="true" tabindex="-1">
+        <source data-src="assets/freedom-web.mp4" type="video/mp4">
+      </video>
+      <div class="intro-shade" aria-hidden="true"></div>
+      <div class="intro-copy">
+        <p class="intro-name">Yuran Wang</p>
+        <p class="intro-education">SEU B.Sc. <span aria-hidden="true">→</span> PKU M.Sc. <span aria-hidden="true">→</span> NUS Ph.D.</p>
+        <p class="intro-motto">Try to be Pioneer rather than Follower</p>
+      </div>
+      <a class="intro-scroll" href="#home">
+        <span>Explore</span>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v15m-6-6 6 6 6-6" /></svg>
+      </a>
+      <button class="intro-playback" type="button" data-intro-toggle aria-label="Pause background video" hidden>
+        <svg class="pause-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 5v10M13 5v10" /></svg>
+        <svg class="play-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m7 4 9 6-9 6Z" /></svg>
+        <span data-intro-toggle-label>Pause video</span>
+      </button>
+    </section>
 
     <header class="site-header" data-scroll-header>
-      <a class="mark" href="#home">EW</a>
       <nav aria-label="Primary navigation">
         <a href="#news">News</a>
         <a href="#education">Education</a>
@@ -26,13 +49,13 @@
     </header>
 
     <main>
-      <section id="home" class="hero section-shell">
+      <section id="home" class="hero section-shell" tabindex="-1" aria-labelledby="profile-heading">
         <div class="hero-copy reveal">
           <p class="eyebrow">Embodied AI · Robotic Manipulation · Computer Vision</p>
-          <h1>Yuran Wang</h1>
-          <p class="name-line"><span class="chinese-name">王昱然</span><span class="name-divider"></span><span>Euren</span></p>
+          <h1 id="profile-heading">Yuran Wang</h1>
+          <p class="name-line"><span class="chinese-name">王昱然</span></p>
           <p class="hero-subtitle">
-            I am an incoming Ph.D. candidate at the
+            I am a Ph.D. candidate at the
             <a href="https://www.comp.nus.edu.sg/" target="_blank" rel="noreferrer">School of Computing, NUS</a>,
             advised by
             <a href="https://linsats.github.io/" target="_blank" rel="noreferrer">Prof. Lin Shao</a>.
@@ -47,13 +70,17 @@
           </p>
           <div class="hero-actions" aria-label="Profile links">
             <a class="button primary" href="https://github.com/wayrise" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="button" href="https://scholar.google.com/citations?view_op=search_authors&mauthors=Yuran+Wang+Peking+University+Embodied+AI" target="_blank" rel="noreferrer">Google Scholar</a>
-            <a class="button" href="assets/CV_WangYuran.pdf" target="_blank" rel="noreferrer">View CV</a>
+            <a class="button" href="https://scholar.google.com/citations?user=4DJfGOMAAAAJ" target="_blank" rel="noreferrer">Google Scholar</a>
           </div>
         </div>
         <figure class="portrait-wrap reveal">
-          <img src="assets/homepage_photo.jpg" alt="Portrait of Euren Wang">
-          <figcaption>Peking University · Beijing, China</figcaption>
+          <div class="portrait-frame">
+            <img src="assets/homepage_photo_changchun.jpg" width="1024" height="1536" alt="Yuran Wang at Changbai Mountains Huamei Resort">
+          </div>
+          <figcaption>
+            Taken at Changbai Mountains Huamei Resort.<br>
+            Photo by <a href="https://skywalker-yqz.github.io/" target="_blank" rel="noreferrer">Qize Yu</a>.
+          </figcaption>
         </figure>
       </section>
 
@@ -63,25 +90,54 @@
         </div>
         <div class="news-list">
           <article class="news-item news-highlight reveal">
+            <time datetime="2026-10">2026.10</time>
+            <div>
+              <span class="news-tag">Award</span>
+              <p><strong><a href="https://xpolicylab.github.io/" target="_blank" rel="noreferrer">XPolicyLab</a></strong> received the <strong class="news-emphasis">Best Tool Paper Award</strong> at the <strong>IROS 2026 ScaleInfra Workshop</strong>.</p>
+            </div>
+          </article>
+          <article class="news-item reveal">
+            <time datetime="2026-09">2026.09</time>
+            <div>
+              <span class="news-tag">Release</span>
+              <p><strong><a href="https://openwam-official.github.io/" target="_blank" rel="noreferrer">OpenWAM</a></strong> has been released! It is a full-stack, open-source research framework for World Action Models.</p>
+              <p>Welcome aboard OpenWAM and have fun!</p>
+            </div>
+          </article>
+          <article class="news-item reveal">
+            <time datetime="2026-08">2026.08</time>
+            <div>
+              <span class="news-tag">Release</span>
+              <p>Released <strong><a href="https://xpolicylab.github.io/" target="_blank" rel="noreferrer">XPolicyLab</a></strong>, a unified standard for robot policy evaluation and deployment!</p>
+            </div>
+          </article>
+          <article class="news-item reveal">
+            <time datetime="2026-07">2026.07</time>
+            <div>
+              <span class="news-tag">Release</span>
+              <p>Released <strong><a href="https://robodojo-benchmark.com/" target="_blank" rel="noreferrer">RoboDojo</a></strong>, a unified sim-and-real benchmark for generalist robot manipulation!</p>
+            </div>
+          </article>
+          <article class="news-item reveal">
             <time datetime="2026-02">2026.02</time>
             <div>
               <span class="news-tag">Acceptance</span>
-              <p><strong>GarmentPile++</strong> was accepted to ICRA 2026. Congratulations to <a href="https://d-finite.github.io/" target="_blank" rel="noreferrer">Mingleyang Li</a>!</p>
-              <p>In addition, four other papers were accepted to ICRA 2026. Congratulations to all collaborators!</p>
+              <p><strong><a href="https://garmentpile2.github.io/" target="_blank" rel="noreferrer">GarmentPile++</a></strong> was accepted to <strong>ICRA 2026</strong>. Congratulations to <a href="https://d-finite.github.io/" target="_blank" rel="noreferrer">Mingleyang Li</a>!</p>
+              <p>In addition, four other papers were accepted to <strong>ICRA 2026</strong>. Congratulations to all collaborators!</p>
             </div>
           </article>
           <article class="news-item reveal">
             <time datetime="2025-06">2025.06</time>
             <div>
-              <span class="news-tag">Spotlight</span>
-              <p><strong>DexGarmentLab</strong> was accepted as a Spotlight paper at NeurIPS 2025.</p>
+              <span class="news-tag news-emphasis">Spotlight</span>
+              <p><strong><a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" rel="noreferrer">DexGarmentLab</a></strong> was accepted as a <span class="news-emphasis">Spotlight</span> paper at <strong>NeurIPS 2025</strong>.</p>
             </div>
           </article>
           <article class="news-item reveal">
             <time datetime="2025-03">2025.03</time>
             <div>
               <span class="news-tag">Acceptance</span>
-              <p><strong>GarmentPile</strong> was accepted to CVPR 2025.</p>
+              <p><strong><a href="https://garmentpile.github.io/" target="_blank" rel="noreferrer">GarmentPile</a></strong> was accepted to <strong>CVPR 2025</strong>.</p>
             </div>
           </article>
         </div>
@@ -93,10 +149,18 @@
         </div>
         <div class="timeline">
           <article class="timeline-item reveal">
-            <span>2025.09 - Present</span>
+            <span>2026.08 - Present</span>
+            <div>
+              <h3>National University of Singapore</h3>
+              <p>Ph.D., Embodied AI</p>
+            </div>
+            <img class="school-seal" src="assets/nus_logo.webp" alt="National University of Singapore logo">
+          </article>
+          <article class="timeline-item reveal">
+            <span>2025.09 - 2026.06</span>
             <div>
               <h3>Peking University</h3>
-              <p>Master, Artificial Intelligence</p>
+              <p>Master, Embodied AI</p>
             </div>
             <img class="school-seal" src="assets/Peking_University_seal.png" alt="Peking University seal">
           </article>
@@ -531,16 +595,17 @@
         <div class="contact-links">
           <a href="mailto:yuranw0818@gmail.com">Email</a>
           <a href="https://github.com/wayrise" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://scholar.google.com/citations?view_op=search_authors&mauthors=Yuran+Wang+Peking+University+Embodied+AI" target="_blank" rel="noreferrer">Google Scholar</a>
+          <a href="https://scholar.google.com/citations?user=4DJfGOMAAAAJ" target="_blank" rel="noreferrer">Google Scholar</a>
           <a href="assets/CV_WangYuran.pdf" target="_blank" rel="noreferrer">CV</a>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>© 2026 Euren Wang. Academic homepage built for GitHub Pages.</p>
+      <p>© 2026 Yuran Wang. Academic homepage built for GitHub Pages.</p>
     </footer>
 
     <script src="script.js"></script>
+    <script src="dot-background.js"></script>
   </body>
 </html>
