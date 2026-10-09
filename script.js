@@ -52,6 +52,7 @@ const syncPlaybackButton = () => {
 
 const canPlay = (video) => {
   if (document.hidden || !visibleVideos.has(video)) return false;
+  if (video.closest(".publication-card")?.hidden) return false;
   if (video === introVideo) {
     return !introPausedByUser && (!reducedMotion.matches || introStartedByUser);
   }
@@ -142,4 +143,61 @@ reducedMotion.addEventListener("change", () => {
   });
   document.querySelectorAll(".reveal-pending").forEach((item) => item.classList.remove("reveal-pending"));
   updateVideos();
+});
+
+// Without JavaScript, every paper remains available in the unified list.
+const publicationSection = document.querySelector("#publications");
+const publicationFilters = publicationSection?.querySelector(".publication-filters");
+const publicationCards = [...(publicationSection?.querySelectorAll(".publication-card") || [])];
+const publicationButtons = [...(publicationFilters?.querySelectorAll("[data-publication-filter]") || [])];
+const publicationStatus = publicationSection?.querySelector("[data-publication-status]");
+
+if (publicationFilters && publicationCards.length) {
+  const selectedCount = publicationCards.filter((card) => card.dataset.selected === "true").length;
+  publicationButtons.forEach((button) => {
+    const count = button.querySelector(".filter-count");
+    if (count) count.textContent = button.dataset.publicationFilter === "selected" ? selectedCount : publicationCards.length;
+  });
+
+  const filterPublications = (filter, announce = true) => {
+    let shown = 0;
+    publicationCards.forEach((card) => {
+      card.hidden = filter === "selected" && card.dataset.selected !== "true";
+      if (!card.hidden) shown += 1;
+    });
+    publicationButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.publicationFilter === filter));
+    });
+    if (announce && publicationStatus) {
+      publicationStatus.textContent = `Showing ${shown} ${filter === "selected" ? "selected publications" : "publications"}.`;
+    }
+    // Stop hidden previews immediately; visible previews retain their playback rules.
+    updateVideos();
+  };
+
+  publicationButtons.forEach((button) => {
+    button.addEventListener("click", () => filterPublications(button.dataset.publicationFilter));
+  });
+  filterPublications("selected", false);
+  publicationFilters.hidden = false;
+}
+
+// Keep the complete author lists in the HTML, with an optional compact view.
+document.querySelectorAll("[data-expandable-authors]").forEach((authors) => {
+  const compact = authors.querySelector("[data-authors-short]");
+  const complete = authors.querySelector("[data-authors-full]");
+  const toggle = authors.querySelector("[data-author-toggle]");
+  const label = toggle?.querySelector("[data-author-toggle-label]");
+  if (!compact || !complete || !toggle || !label) return;
+
+  const setExpanded = (expanded) => {
+    compact.hidden = expanded;
+    complete.hidden = !expanded;
+    toggle.setAttribute("aria-expanded", String(expanded));
+    label.textContent = expanded ? "Hide detailed author list" : "Detailed author list";
+  };
+
+  setExpanded(false);
+  toggle.hidden = false;
+  toggle.addEventListener("click", () => setExpanded(toggle.getAttribute("aria-expanded") !== "true"));
 });

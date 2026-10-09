@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -12,6 +12,137 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <div class="opening" data-opening hidden>
+      <svg class="opening-curtain" width="100%" height="100%" aria-hidden="true">
+        <defs>
+          <pattern id="opening-dots" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="14" cy="14" r="0.75" fill="#718075" opacity="0.16" />
+          </pattern>
+          <mask id="opening-aperture">
+            <rect width="100%" height="100%" fill="white" />
+            <circle data-opening-aperture cx="50%" cy="48%" r="0" fill="black" />
+          </mask>
+        </defs>
+        <g mask="url(#opening-aperture)">
+          <rect width="100%" height="100%" fill="white" />
+          <rect width="100%" height="100%" fill="url(#opening-dots)" />
+        </g>
+      </svg>
+      <div class="opening-art" aria-hidden="true">
+        <svg class="opening-orbit" viewBox="0 0 320 320" fill="none">
+          <defs>
+            <radialGradient id="opening-glow">
+              <stop stop-color="#e1edcf" stop-opacity="0.65" />
+              <stop offset="1" stop-color="#e1edcf" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="160" cy="160" r="105" fill="url(#opening-glow)" />
+          <g class="opening-guides" stroke="#cddcbd" stroke-width="0.8">
+            <circle cx="160" cy="160" r="82" />
+            <ellipse cx="160" cy="160" rx="40" ry="82" transform="rotate(32 160 160)" />
+            <path d="M78 160h164M160 78v164" stroke-dasharray="2 7" />
+            <path d="M160 64v8m0 176v8M64 160h8m176 0h8" />
+          </g>
+          <path class="opening-trail" pathLength="1" d="M86 220C60 190 76 144 112 136C142 128 179 148 177 178C175 212 132 221 124 191C109 143 184 96 237 68" stroke="#88a96c" stroke-width="1.8" stroke-linecap="round" />
+          <g class="opening-markers" fill="#a7be90">
+            <circle cx="86" cy="220" r="2" />
+            <circle cx="112" cy="136" r="2" />
+            <circle cx="177" cy="178" r="2" />
+            <circle cx="124" cy="191" r="2" />
+            <circle cx="237" cy="68" r="2" />
+          </g>
+          <g class="opening-spark">
+            <circle r="11" fill="#c9ddb6" fill-opacity="0.32" />
+            <circle r="3.5" fill="#78995d" />
+          </g>
+        </svg>
+        <p class="opening-motto">Try to be Pioneer rather than Follower</p>
+      </div>
+      <button class="opening-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+    </div>
+    <script>
+      (() => {
+        const opening = document.querySelector("[data-opening]");
+        if (!opening) return;
+
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const navigation = window.performance.getEntriesByType("navigation")[0];
+        // Direct section links and history navigation should go straight to the content.
+        if (motion.matches || window.location.hash || window.scrollY > 0
+            || navigation?.type === "back_forward" || document.hidden) {
+          opening.remove();
+          return;
+        }
+
+        const root = document.documentElement;
+        const aperture = opening.querySelector("[data-opening-aperture]");
+        let finished = false;
+        let leaving = false;
+        let frame = 0;
+        let automatic;
+        let fallback;
+
+        const finish = () => {
+          if (finished) return;
+          finished = true;
+          const hadFocus = opening.contains(document.activeElement);
+          window.clearTimeout(automatic);
+          window.clearTimeout(fallback);
+          window.cancelAnimationFrame(frame);
+          root.classList.remove("is-opening");
+          opening.remove();
+          window.removeEventListener("keydown", onKey);
+          window.removeEventListener("wheel", finish);
+          window.removeEventListener("touchmove", finish);
+          window.removeEventListener("hashchange", finish);
+          window.removeEventListener("pageshow", onPageShow);
+          document.removeEventListener("visibilitychange", onVisibility);
+          motion.removeEventListener("change", finish);
+          if (hadFocus) document.querySelector(".intro-scroll")?.focus({ preventScroll: true });
+        };
+
+        const leave = () => {
+          if (finished || leaving) return;
+          leaving = true;
+          window.clearTimeout(automatic);
+          opening.classList.add("is-leaving");
+          const start = window.performance.now();
+          const reveal = (time) => {
+            if (finished) return;
+            const progress = Math.min((time - start) / 620, 1);
+            const radius = Math.hypot(window.innerWidth * 0.5, window.innerHeight * 0.52) + 2;
+            aperture.setAttribute("r", String(radius * (1 - Math.pow(1 - progress, 3))));
+            if (progress < 1) frame = window.requestAnimationFrame(reveal);
+            else finish();
+          };
+          frame = window.requestAnimationFrame(reveal);
+        };
+
+        const onKey = (event) => {
+          if (!["Tab", "Escape", "Enter", " ", "ArrowDown", "PageDown", "End"].includes(event.key)) return;
+          if (["Escape", "Enter", " "].includes(event.key)) event.preventDefault();
+          // Remove the cover immediately so keyboard focus never stays behind it.
+          finish();
+        };
+        const onPageShow = (event) => { if (event.persisted) finish(); };
+        const onVisibility = () => { if (document.hidden) finish(); };
+
+        opening.hidden = false;
+        root.classList.add("is-opening");
+        opening.addEventListener("click", leave);
+        window.addEventListener("keydown", onKey);
+        window.addEventListener("wheel", finish, { passive: true });
+        window.addEventListener("touchmove", finish, { passive: true });
+        window.addEventListener("hashchange", finish);
+        window.addEventListener("pageshow", onPageShow);
+        document.addEventListener("visibilitychange", onVisibility);
+        motion.addEventListener("change", finish);
+        // Never wait for fonts, images or video; slow connections still get the page.
+        automatic = window.setTimeout(leave, 1450);
+        fallback = window.setTimeout(finish, 2600);
+      })();
+    </script>
+
     <div class="dot-background" data-dot-background aria-hidden="true">
       <canvas data-dot-grid></canvas>
     </div>
@@ -44,7 +175,6 @@
         <a href="#education">Education</a>
         <a href="#publications">Publications</a>
         <a href="#experience">Experience</a>
-        <a href="#contact">Contact</a>
       </nav>
     </header>
 
@@ -69,8 +199,28 @@
             Southeast University.
           </p>
           <div class="hero-actions" aria-label="Profile links">
-            <a class="button primary" href="https://github.com/wayrise" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="button" href="https://scholar.google.com/citations?user=4DJfGOMAAAAJ" target="_blank" rel="noreferrer">Google Scholar</a>
+            <a class="button" href="mailto:yuranw0818@gmail.com">
+              <svg class="profile-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="2" y="2" width="20" height="20" rx="4" fill="#11a4dc" />
+                <rect x="5.5" y="7.5" width="13" height="9" rx="1.5" fill="none" stroke="#fff" stroke-width="1.5" />
+                <path d="m6 8 6 5 6-5" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>Email</span>
+            </a>
+            <a class="button primary" href="https://github.com/wayrise" target="_blank" rel="noreferrer">
+              <svg class="profile-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="#283229" d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85 0 1.71.11 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.77c0 .27.18.58.69.48A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10Z" />
+              </svg>
+              <span>GitHub</span>
+            </a>
+            <a class="button" href="https://scholar.google.com/citations?user=4DJfGOMAAAAJ" target="_blank" rel="noreferrer">
+              <svg class="profile-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="10" fill="#4285f4" />
+                <path d="m4.5 9.5 7.5-4 7.5 4-7.5 4-7.5-4Zm3 2.3v4c2.7 2.2 6.3 2.2 9 0v-4L12 14.2l-4.5-2.4Z" fill="#fff" />
+                <path d="M19.5 9.5V15" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
+              </svg>
+              <span>Google Scholar</span>
+            </a>
           </div>
         </div>
         <figure class="portrait-wrap reveal">
@@ -130,7 +280,7 @@
             <time datetime="2025-06">2025.06</time>
             <div>
               <span class="news-tag news-emphasis">Spotlight</span>
-              <p><strong><a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" rel="noreferrer">DexGarmentLab</a></strong> was accepted as a <span class="news-emphasis">Spotlight</span> paper at <strong>NeurIPS 2025</strong>.</p>
+              <p><strong><a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" rel="noreferrer">DexGarmentLab</a></strong> was accepted as a <strong class="news-emphasis">Spotlight</strong> paper at <strong>NeurIPS 2025</strong>.</p>
             </div>
           </article>
           <article class="news-item reveal">
@@ -176,20 +326,376 @@
       </section>
 
       <section id="publications" class="section-shell publications-section">
-        <div class="section-heading reveal">
-          <p class="eyebrow">Publications</p>
-          <h2>Selected Publications</h2>
+        <div class="publications-heading reveal">
+          <div class="section-heading">
+            <h2>Publications</h2>
+            <p class="publication-note">* denotes equal contribution. Highlighted cards indicate selected work.</p>
+          </div>
+          <div class="publication-filters" role="group" aria-label="Filter publications" hidden>
+            <button class="publication-filter" type="button" data-publication-filter="selected" aria-pressed="true" aria-controls="publication-list">Selected <span class="filter-count" aria-hidden="true">8</span></button>
+            <button class="publication-filter" type="button" data-publication-filter="all" aria-pressed="false" aria-controls="publication-list">All <span class="filter-count" aria-hidden="true">21</span></button>
+          </div>
         </div>
+        <p class="publication-status-message" data-publication-status role="status" aria-live="polite" aria-atomic="true"></p>
 
-        <div class="publication-grid">
-          <article class="publication-card featured reveal">
+        <div id="publication-list" class="publication-grid">
+          <article class="publication-card is-selected reveal" data-selected="true">
+            <a class="media-slot image-media groundingpi-media" href="https://groundingpi.github.io/" target="_blank" rel="noreferrer" aria-label="GroundingPI project page">
+              <img src="assets/GroundingPI.png" width="2800" height="847" alt="GroundingPI project overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>GroundingPI: A Grounding Foundation Model towards Physical Intelligence with Visual Primitives</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors">Qize Yu*‡, Lianrui Fan*, Boyu Chen*, Jiaqi Liang*, Xini Ding*, Yue Chen, Zetian Song, <strong class="author-self">Yuran Wang</strong>, Yi Zou, Kaixuan Wang, Tianxing Chen, Wenxuan Song, Bohan Zhou, Mingleyang Li, Siqiao Huang, Yuqi Ye, Caigao Jiang, Wei Wei, Ruihai Wu, Hang Zhang, Yixiao Ge, Shuchang Zhou, Shilong Liu, Xianming Liu, Ping Luo‡, Shiyu Huang‡</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2609.39601" target="_blank" rel="noreferrer" aria-label="GroundingPI arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/groundingpi/GroundingPI" target="_blank" rel="noreferrer" aria-label="GroundingPI GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://groundingpi.github.io/" target="_blank" rel="noreferrer" aria-label="GroundingPI project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media groundanything-media" href="https://groundingpi.github.io/groundanything/" target="_blank" rel="noreferrer" aria-label="GroundAnything project page">
+              <img src="assets/GroundAnything.png" width="2800" height="868" alt="GroundAnything parallel decoding and visual grounding architecture" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>GroundAnything: Reconciling Parallel Decoding with Precise Visual Grounding at Flash Speed</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+              </div>
+              <p class="authors">Qize Yu*†, Lianrui Fan*, Bowen Ping*, Xini Ding*, Zetian Song*, Junbo Niu, Kaixuan Wang, Tianxing Chen, Yue Chen, Minghua He, <strong class="author-self">Yuran Wang</strong>, Jie Huang, Haojun Zhang, Min Chen, Hao Li, Wenxuan Song, Ruihai Wu, Xianming Liu, Shilong Liu, Shuchang Zhou, Ping Luo‡, Shiyu Huang‡</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2609.39600" target="_blank" rel="noreferrer" aria-label="GroundAnything arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/groundingpi/GroundAnything" target="_blank" rel="noreferrer" aria-label="GroundAnything GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://groundingpi.github.io/groundanything/" target="_blank" rel="noreferrer" aria-label="GroundAnything project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-first-author is-selected reveal" data-selected="true">
+            <a class="media-slot image-media openwam-media" href="https://openwam-official.github.io/" target="_blank" rel="noreferrer" aria-label="OpenWAM project page">
+              <img src="assets/OpenWAM.png" width="2600" height="1029" alt="OpenWAM project overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>OpenWAM: An Open, Modular Exploration Towards Systematic World–Action Model Pretraining</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors"><strong class="author-self">Yuran Wang*‡</strong>, Siqiao Huang*‡, Mingleyang Li*, Chenhao Zhang*, Jiaqi Liang*, Weiyang Jin, Yue Chen, Xuemin Chi, Donghao Zhou, Qize Yu, Yu-Kai Wang, Yuhan Rui, Shenzhe Yao, Zhen Yuan, Zhenhao Shen, Kefei Zhu, Zijie Zhu, Ning Gao, Xiaowei Chi, Guanqi He, Shanghang Zhang, Hao Dong, Lin Shao†, Hang Zhao†</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2609.07398" target="_blank" rel="noreferrer" aria-label="OpenWAM arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/OpenWAM-Official/OpenWAM" target="_blank" rel="noreferrer" aria-label="OpenWAM GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://openwam-official.github.io/" target="_blank" rel="noreferrer" aria-label="OpenWAM project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-selected reveal" data-selected="true">
+            <a class="media-slot image-media xpolicylab-media" href="https://xpolicylab.github.io/" target="_blank" rel="noreferrer" aria-label="XPolicyLab project page">
+              <img src="assets/XPolicyLab.png" width="1600" height="670" alt="XPolicyLab project overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>XPolicyLab: A Unified Standard and Open Ecosystem for Robot Policy Evaluation and Deployment</h3>
+              <div class="publication-status">
+                <span class="venue"><span>IROS2026 · ScaleInfra Workshop · <strong>Best Tool Paper Award</strong></span></span>
+              </div>
+              <p class="authors" data-expandable-authors>
+                <span data-authors-short hidden>Tianxing Chen*, Yue Chen*, …, <strong class="author-self">Yuran Wang</strong>, …</span>
+                <span id="xpolicylab-authors-full" data-authors-full>Tianxing Chen*§, Yue Chen*, Tian Nian*, Zijian Cai*, Guangyu Chen*, Wenwei Lin*, Qiwei Liang*, Zanxin Chen*, Peicheng Xiang, Kailun Su, Zixuan Li, Junyuan Tang, Yan Qin, Qiangyu Chen, Shaolong Zhu, Xiang Li, Jiahao Zhang, Weijie Wan, Baijun Chen, Honghao Su, Kehe Ye, Shujia Liu, Huan-ang Gao, Kaixuan Wang, Haotian Liang, Yunze Liu, Mingleyang Li, <strong class="author-self">Yuran Wang</strong>, Boyu Chen, Hongzhe Bi, Shuhe Huang, Hengkai Tan, Jisong Cai, Yao Mu, Jun Guo, Xiaofeng Wang, Zheng Zhu, Weijie Ke, Hengtao Li, Yiqing Wang, Tengyue Jiang, Yuhang Tang, Xiaofan Li, Ganlin Yang, Zhangzheng Tu, Shuai Yang, Wenxuan Song, Pengxiang Ding, Kaidong Zhang, Yu Sun, Junliang Guo, Tong Zhang, Yixing Chen, Rongxu Cui, Zongzheng Zhang, Haoxiang Ma, Junhao Cai, Haoyu Zhang, Senqiao Yang, Jinhui Ye, Pengguang Chen, Shu Liu, Xiu Su, Wenhan Fang, Wenhao Li, Yichao Cao, Chengyao Wang, Qiang Chen, Wenbo Ding†, Ping Luo†</span>
+                <button class="author-toggle" type="button" data-author-toggle aria-expanded="false" aria-controls="xpolicylab-authors-full" hidden>
+                  <span data-author-toggle-label>Detailed author list</span>
+                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2608.09892" target="_blank" rel="noreferrer" aria-label="XPolicyLab arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/XPolicyLab/XPolicyLab" target="_blank" rel="noreferrer" aria-label="XPolicyLab GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://xpolicylab.github.io/" target="_blank" rel="noreferrer" aria-label="XPolicyLab project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-selected reveal" data-selected="true">
+            <a class="media-slot image-media robodojo-media" href="https://robodojo-benchmark.com/" target="_blank" rel="noreferrer" aria-label="RoboDojo project page">
+              <img src="assets/RoboDojo.png" width="1024" height="766" alt="RoboDojo project overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+              </div>
+              <p class="authors" data-expandable-authors>
+                <span data-authors-short hidden>Tianxing Chen*§, Yue Chen*§†, …, <strong class="author-self">Yuran Wang</strong>, …</span>
+                <span id="robodojo-authors-full" data-authors-full>Tianxing Chen*§, Yue Chen*§†, Zixuan Li*, Junyuan Tang*, Kailun Su*, Haoran Lu*, Weijie Wan*, Baijun Chen*, Songling Liu*, Haowen Yan, Honghao Su, Zhiyang Dou, Kaixuan Wang, Dandan Zhang, Yunze Liu, Yan Qin, Qiwei Liang, Qiwei Wu, Zijian Lin, Wenwei Lin, <strong class="author-self">Yuran Wang</strong>, Minghua He, Tianshu Wu, Ruihai Wu, Jingquan Zhou, Kai-Chong Lei, Haibao Yu, Yuanfeng Ji, Weiyang Jin, Guanyu Lin, Xiaofan Li, Qi Xiong, Renjing Xu, Zhongyu Li, Wenhao Chai, Enze Xie, Ziwei Wang, Yao Mu, Hao Dong, Wojciech Matusik, Mingyu Ding†, Wenbo Ding†, Ping Luo†, Masayoshi Tomizuka†</span>
+                <button class="author-toggle" type="button" data-author-toggle aria-expanded="false" aria-controls="robodojo-authors-full" hidden>
+                  <span data-author-toggle-label>Detailed author list</span>
+                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2607.04434" target="_blank" rel="noreferrer" aria-label="RoboDojo arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/RoboDojo-Benchmark/RoboDojo" target="_blank" rel="noreferrer" aria-label="RoboDojo GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://robodojo-benchmark.com/" target="_blank" rel="noreferrer" aria-label="RoboDojo project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media affordancewam-media" href="https://alexyd2001.github.io/AffordanceWAM/" target="_blank" rel="noreferrer" aria-label="AffordanceWAM project page">
+              <img src="assets/AffordanceWAM.png" width="3083" height="2125" alt="AffordanceWAM joint world-action modeling pipeline" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>AffordanceWAM: Affordance-Aware Joint World-Action Modeling for Robot Manipulation</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors">Jiadi You*, Qize Yu*, Yue Chen, Minghong Cai, Zhide Zhong, <strong class="author-self">Yuran Wang</strong>, Bowen Ping, Jiaqi Liang, Zhenhao Shen, Haodong Yan, Yinchuan Li, Ruihai Wu, Xiaojuan Qi†, Yingcong Chen†</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2609.22332" target="_blank" rel="noreferrer" aria-label="AffordanceWAM arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://alexyd2001.github.io/AffordanceWAM/" target="_blank" rel="noreferrer" aria-label="AffordanceWAM project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media adadexgrasp-media" href="https://xirui1208.github.io/AdaDexGrasp/" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp project page">
+              <img src="assets/AdaDexGrasp.png" width="1856" height="510" alt="AdaDexGrasp visual-tactile grasping overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>AdaDexGrasp: Adaptive Dexterous Grasping via 3D Visuo-Tactile Representation Fusion</h3>
+              <div class="publication-status">
+                <span class="venue"><span>ECCV 2026</span></span>
+              </div>
+              <p class="authors">Xirui Liang, Jingkai Xu, Jiaqi Liang, <strong class="author-self">Yuran Wang</strong>, Ruochong Li, Yuanpei Chen, Masayoshi Tomizuka, Wei Zhan, Ruihai Wu</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2608.07600" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/Xirui1208/AdaDexGrasp" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://xirui1208.github.io/AdaDexGrasp/" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media affordancevla-media" href="https://skywalker-yqz.github.io/AffordanceVLA/" target="_blank" rel="noreferrer" aria-label="AffordanceVLA project page">
+              <img src="assets/AffordanceVLA.png" width="3734" height="1974" alt="AffordanceVLA affordance-aware action generation overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>AffordanceVLA: A Vision-Language-Action Model Empowering Action Generation through Affordance-Aware Understanding</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors">Qize Yu*, Jiadi You*, <strong class="author-self">Yuran Wang</strong>, Jiaqi Liang, Bowen Ping, Yang Tian, Yue Chen, Minghong Cai, Zeying Gong, Ruihai Wu, Yinchuan Li, Junwei Liang†, Yingcong Chen†</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2606.06155" target="_blank" rel="noreferrer" aria-label="AffordanceVLA arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/Skywalker-yqz/AffordanceVLA" target="_blank" rel="noreferrer" aria-label="AffordanceVLA GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://skywalker-yqz.github.io/AffordanceVLA/" target="_blank" rel="noreferrer" aria-label="AffordanceVLA project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media flatlab-media" href="https://flatlab-web.github.io/" target="_blank" rel="noreferrer" aria-label="FlatLab project page">
+              <img src="assets/FlatLab.png" width="1483" height="806" alt="FlatLab manipulation framework overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>FlatLab: A Unified Methodology Framework and Simulation-Based Benchmark for Robotic Manipulation of Flat Objects</h3>
+              <div class="publication-status">
+                <span class="venue"><span>ICML 2026</span></span>
+              </div>
+              <p class="authors">Xingyu Zhu, Wenshuo Han, Zhouyu Wang, <strong class="author-self">Yuran Wang</strong>, Ruihai Wu, Hao Dong, Fan Tang, Hechang Chen, Hyung Jin Chang, Yixing Gao</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2608.14049" target="_blank" rel="noreferrer" aria-label="FlatLab arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://flatlab-web.github.io/" target="_blank" rel="noreferrer" aria-label="FlatLab project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-first-author is-selected reveal" data-selected="true">
             <a class="media-slot image-media rmbench-media" href="https://rmbench.github.io/" target="_blank" rel="noreferrer" aria-label="RMBench project page">
               <img src="assets/RMBench.jpg" alt="RMBench project preview">
             </a>
             <div class="publication-body">
-              <p class="venue">Under Review</p>
               <h3>RMBench: Memory-Dependent Robotic Manipulation Benchmark with Insights into Policy Design</h3>
-              <p class="authors">Tianxing Chen*, <strong>Yuran Wang*</strong>, Mingleyang Li*, Yan Qin*, Hao Shi, Zixuan Li, Yifan Hu, Yingsheng Zhang, Kaixuan Wang, Yue Chen, Hongcheng Wang, Renjing Xu, Ruihai Wu, Yao Mu, Yaodong Yang, Hao Dong, Ping Luo</p>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors">Tianxing Chen*, <strong class="author-self">Yuran Wang*</strong>, Mingleyang Li*, Yan Qin*, Hao Shi, Zixuan Li, Yifan Hu, Yingsheng Zhang, Kaixuan Wang, Yue Chen, Hongcheng Wang, Renjing Xu, Ruihai Wu, Yao Mu, Yaodong Yang, Hao Dong, Ping Luo</p>
               <div class="publication-links">
                 <a href="https://arxiv.org/abs/2603.01229" target="_blank" rel="noreferrer" aria-label="RMBench arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -218,16 +724,112 @@
             </div>
           </article>
 
-          <article class="publication-card featured reveal">
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media graspall-media" href="https://arxiv.org/abs/2603.14789" target="_blank" rel="noreferrer" aria-label="GraspALL arXiv paper">
+              <img src="assets/GraspALL.png" width="1909" height="925" alt="GraspALL low-light garment grasping architecture" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>GraspALL: Adaptive Structural Compensation from Illumination Variation for Robotic Garment Grasping in Any Low-Light Conditions</h3>
+              <div class="publication-status">
+                <span class="venue"><span>CVPR 2026 · <strong>Highlight</strong></span></span>
+              </div>
+              <p class="authors">Haifeng Zhong, Wenshuo Han, Zhouyu Wang, Runyang Feng, Fan Tang, Tong-Yee Lee, Zipei Fan, Ruihai Wu, <strong class="author-self">Yuran Wang</strong>, Hao Dong, Hechang Chen, Hyung Jin Chang, Yixing Gao</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2603.14789" target="_blank" rel="noreferrer" aria-label="GraspALL arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/Zhonghaifeng6/GraspALL" target="_blank" rel="noreferrer" aria-label="GraspALL GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media magicsim-media" href="https://arxiv.org/abs/2606.17511" target="_blank" rel="noreferrer" aria-label="MagicSim arXiv paper">
+              <img src="assets/MagicSim.png" width="2037" height="1243" alt="MagicSim executable embodied interaction infrastructure overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>MagicSim: A Unified Infrastructure for Executable Embodied Interaction</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+              </div>
+              <p class="authors">Haoran Lu*†, Songling Liu*, Yue Chen*, Guo Ye, Mutian Shen, Shuyang Yu, Yu Xiao, Shang Wu, Jiayi Wang, Jianshu Zhang, Jihai Zhao, Xiangtian Gui, Chuye Hong, <strong class="author-self">Yuran Wang</strong>, Maojiang Su, Ruihai Wu, Zhaoran Wang, Han Liu†</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2606.17511" target="_blank" rel="noreferrer" aria-label="MagicSim arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <a class="media-slot image-media heterogenmanip-media" href="https://yzmyalier.github.io/HeteroGenManip/" target="_blank" rel="noreferrer" aria-label="HeteroGenManip project page">
+              <img src="assets/HeteroGenManip.png" width="3386" height="1607" alt="HeteroGenManip heterogeneous object interaction overview" loading="lazy" decoding="async">
+            </a>
+            <div class="publication-body">
+              <h3>HeteroGenManip: Generalizable Manipulation For Heterogeneous Object Interactions</h3>
+              <div class="publication-status">
+                <span class="venue is-review">Preprint</span>
+                <span class="venue is-review">Under Review</span>
+              </div>
+              <p class="authors">Zhenhao Shen*, Zeming Yang*, Yue Chen, <strong class="author-self">Yuran Wang</strong>, Shengqiang Xu, Mingleyang Li, Hao Dong, Ruihai Wu†</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2605.10201" target="_blank" rel="noreferrer" aria-label="HeteroGenManip arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/YzmYalier/HeteroGenManip" target="_blank" rel="noreferrer" aria-label="HeteroGenManip GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Code
+                </a>
+                <a href="https://yzmyalier.github.io/HeteroGenManip/" target="_blank" rel="noreferrer" aria-label="HeteroGenManip project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-first-author is-selected reveal" data-selected="true">
             <a class="media-slot image-media video-media garmentpile2-video" href="https://garmentpile2.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile++ project page">
               <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="GarmentPile++ project preview">
                 <source src="assets/GarmentPile++.mp4" type="video/mp4">
               </video>
             </a>
             <div class="publication-body">
-              <p class="venue">ICRA 2026</p>
               <h3>GarmentPile++: Affordance-Driven Cluttered Garments Retrieval with Vision-Language Reasoning</h3>
-              <p class="authors">Mingleyang Li*, <strong>Yuran Wang*</strong>, Yue Chen, Tianxing Chen, Jiaqi Liang, Zishun Shen, Haoran Lu, Ruihai Wu, Hao Dong</p>
+              <div class="publication-status">
+                <span class="venue">ICRA 2026</span>
+              </div>
+              <p class="authors">Mingleyang Li*, <strong class="author-self">Yuran Wang*</strong>, Yue Chen, Tianxing Chen, Jiaqi Liang, Zishun Shen, Haoran Lu, Ruihai Wu, Hao Dong</p>
               <div class="publication-links">
                 <a href="https://arxiv.org/abs/2603.04158" target="_blank" rel="noreferrer" aria-label="GarmentPile++ arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -256,16 +858,19 @@
             </div>
           </article>
 
-          <article class="publication-card featured reveal">
+          <article class="publication-card reveal" data-selected="false">
             <a class="media-slot image-media video-media lehome-video" href="https://lehome-web.github.io/" target="_blank" rel="noreferrer" aria-label="LeHome project page">
               <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="LeHome project preview">
                 <source src="assets/Lehome.mp4" type="video/mp4">
               </video>
             </a>
             <div class="publication-body">
-              <p class="venue">ICRA 2026 · IROS RAMODO Workshop Best Paper</p>
               <h3>LeHome: A Simulation Environment for Deformable Object Manipulation in Household Scenarios</h3>
-              <p class="authors">Zeyi Li, Yushi Yang, Shawn Xie, Jingkai Xu, Tianxing Chen, <strong>Yuran Wang</strong>, Zhenhao Shen, Yan Shen, Wenjun Li, Yukun Zheng, Chaorui Zhang, Siyi Lin, Fei Teng, Hongjun Yang, Ming Chen, Steve Xie, Ruihai Wu</p>
+              <div class="publication-status">
+                <span class="venue">ICRA 2026</span>
+                <span class="publication-award">IROS RAMODO Workshop Best Paper</span>
+              </div>
+              <p class="authors">Zeyi Li, Yushi Yang, Shawn Xie, Jingkai Xu, Tianxing Chen, <strong class="author-self">Yuran Wang</strong>, Zhenhao Shen, Yan Shen, Wenjun Li, Yukun Zheng, Chaorui Zhang, Siyi Lin, Fei Teng, Hongjun Yang, Ming Chen, Steve Xie, Ruihai Wu</p>
               <div class="publication-links">
                 <a href="https://arxiv.org/abs/2604.22363" target="_blank" rel="noreferrer" aria-label="LeHome arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -294,14 +899,103 @@
             </div>
           </article>
 
-          <article class="publication-card featured reveal">
+          <article class="publication-card reveal" data-selected="false">
+            <div class="media-slot image-media video-media dexknot-media">
+              <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="DexKnot project preview">
+                <source src="assets/DexKnot.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="publication-body">
+              <h3>DexKnot: Generalizable Visuomotor Policy Learning for Dexterous Bag-Knotting</h3>
+              <div class="publication-status">
+                <span class="venue">ICRA 2026</span>
+              </div>
+              <p class="authors">Jiayuan Zhang, Ruihai Wu, Haojun Chen, <strong class="author-self">Yuran Wang</strong>, Yifan Zhong, Ceyao Zhang, Yaodong Yang, Yuanpei Chen</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/pdf/2603.07136" target="_blank" rel="noreferrer" aria-label="DexKnot arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <div class="media-slot image-media sparse-meets-dense-media">
+              <img src="assets/Sparse_Meets_Dense.jpg" alt="Sparse Meets Dense project preview">
+            </div>
+            <div class="publication-body">
+              <h3>Sparse Meets Dense: Correspondence Guided Robotic Manipulation with Rigid-Deformable Interactions</h3>
+              <div class="publication-status">
+                <span class="venue">ICRA 2026</span>
+              </div>
+              <p class="authors">Ziyu Zhu, Ruihai Wu, Yue Chen, Xirui Liang, Hojin Bae, <strong class="author-self">Yuran Wang</strong>, Hao Dong</p>
+              <div class="publication-links">
+                <a href="https://sparse-meets-dense.github.io/" target="_blank" rel="noreferrer" aria-label="Sparse Meets Dense project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card reveal" data-selected="false">
+            <div class="media-slot image-media adaptpnp-media">
+              <img src="assets/AdaptPnP.png" alt="AdaptPnP project preview">
+            </div>
+            <div class="publication-body">
+              <h3>AdaptPnP: Integrating Prehensile and Non-Prehensile Skills for Adaptive Robotic Manipulation</h3>
+              <div class="publication-status">
+                <span class="venue">ICRA 2026</span>
+              </div>
+              <p class="authors">Jinxuan Zhu, Chenrui Tie, Xinyi Cao, <strong class="author-self">Yuran Wang</strong>, Jingxiang Guo, Zixuan Chen, Haonan Chen, Junting Chen, Yangyu Xiao, Ruihai Wu, Lin Shao</p>
+              <div class="publication-links">
+                <a href="https://arxiv.org/abs/2511.11052" target="_blank" rel="noreferrer" aria-label="AdaptPnP arXiv paper">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l5 5v13H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
+                    <path d="M10.5 14.2h3"></path>
+                  </svg>
+                  Arxiv
+                </a>
+                <a href="https://github.com/nolann030628/AdaptPNP.git" target="_blank" rel="noreferrer" aria-label="AdaptPnP GitHub repository">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
+                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
+                  </svg>
+                  Github
+                </a>
+                <a href="https://adaptpnp.github.io/" target="_blank" rel="noreferrer" aria-label="AdaptPnP project page">
+                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+                  </svg>
+                  Project
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="publication-card is-first-author is-selected reveal" data-selected="true">
             <a class="media-slot image-media dex-media" href="https://wayrise.github.io/DexGarmentLab/" target="_blank" rel="noreferrer" aria-label="DexGarmentLab project page">
               <img src="assets/DexGarmentLab.jpg" alt="DexGarmentLab project preview">
             </a>
             <div class="publication-body">
-              <p class="venue">NeurIPS Spotlight 2025 · IROS RAMODO Workshop Best Paper Finalist</p>
               <h3>DexGarmentLab: Dexterous Garment Manipulation Environment with Generalizable Policy</h3>
-              <p class="authors"><strong>Yuran Wang*</strong>, Ruihai Wu*, Yue Chen*, Jiarui Wang, Jiaqi Liang, Ziyu Zhu, Haoran Geng, Jitendra Malik, Pieter Abbeel, Hao Dong</p>
+              <div class="publication-status">
+                <span class="venue"><span>NeurIPS2025 · <strong>Spotlight</strong></span></span>
+                <span class="publication-award"><span>IROS2025 · <strong>RAMODO Workshop · Best Poster Finalist</strong></span></span>
+              </div>
+              <p class="authors"><strong class="author-self">Yuran Wang*</strong>, Ruihai Wu*, Yue Chen*, Jiarui Wang, Jiaqi Liang, Ziyu Zhu, Haoran Geng, Jitendra Malik, Pieter Abbeel, Hao Dong</p>
               <div class="publication-links">
                 <a href="https://arxiv.org/pdf/2505.11032" target="_blank" rel="noreferrer" aria-label="DexGarmentLab arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -330,60 +1024,16 @@
             </div>
           </article>
 
-          <article class="publication-card featured reveal">
-            <a class="media-slot image-media video-media garmentpile-video" href="https://garmentpile.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile project page">
-              <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="GarmentPile project preview">
-                <source src="assets/GarmentPile.mp4" type="video/mp4">
-              </video>
-            </a>
-            <div class="publication-body">
-              <p class="venue">CVPR 2025 · IROS RAMODO Workshop Best Paper Finalist</p>
-              <h3>GarmentPile: Point-Level Visual Affordance Guided Retrieval and Adaptation for Cluttered Garments Manipulation</h3>
-              <p class="authors">Ruihai Wu*, Ziyu Zhu*, <strong>Yuran Wang*</strong>, Yue Chen, Jiarui Wang, Hao Dong</p>
-              <div class="publication-links">
-                <a href="https://arxiv.org/pdf/2503.09243" target="_blank" rel="noreferrer" aria-label="GarmentPile arXiv paper">
-                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M7 3h7l5 5v13H7z"></path>
-                    <path d="M14 3v5h5"></path>
-                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
-                    <path d="M10.5 14.2h3"></path>
-                  </svg>
-                  Arxiv
-                </a>
-                <a href="https://github.com/AlwaySleepy/Garment-Pile" target="_blank" rel="noreferrer" aria-label="GarmentPile GitHub repository">
-                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
-                    <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
-                  </svg>
-                  Github
-                </a>
-                <a href="https://garmentpile.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile project page">
-                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
-                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
-                  </svg>
-                  Project
-                </a>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <details class="other-publications reveal">
-          <summary class="section-heading compact other-publications-summary">
-            <span class="eyebrow">Additional Works</span>
-            <span class="summary-title">Other Publications</span>
-            <span class="summary-hint">Click Other Publications to view more works.</span>
-          </summary>
-          <div class="mini-publications">
-          <article class="mini-paper reveal">
-            <div class="mini-media image-mini-media roboverse-media">
+          <article class="publication-card reveal" data-selected="false">
+            <div class="media-slot image-media roboverse-media">
               <img src="assets/Roboverse.jpg" alt="RoboVerse project preview">
             </div>
-            <div>
+            <div class="publication-body">
               <h3>RoboVerse: Towards a Unified Platform, Dataset and Benchmark for Scalable and Generalizable Robot Learning</h3>
-              <p class="venue">RSS 2025</p>
-              <p>RoboVerse Team</p>
+              <div class="publication-status">
+                <span class="venue">RSS 2025</span>
+              </div>
+              <p class="authors">RoboVerse Team</p>
               <div class="publication-links">
                 <a href="https://arxiv.org/abs/2504.18904" target="_blank" rel="noreferrer" aria-label="RoboVerse arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -420,18 +1070,22 @@
               </div>
             </div>
           </article>
-          <article class="mini-paper reveal">
-            <div class="mini-media image-mini-media video-mini-media dexknot-media">
-              <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="DexKnot project preview">
-                <source src="assets/DexKnot.mp4" type="video/mp4">
+
+          <article class="publication-card is-first-author is-selected reveal" data-selected="true">
+            <a class="media-slot image-media video-media garmentpile-video" href="https://garmentpile.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile project page">
+              <video autoplay muted loop playsinline webkit-playsinline preload="auto" aria-label="GarmentPile project preview">
+                <source src="assets/GarmentPile.mp4" type="video/mp4">
               </video>
-            </div>
-            <div>
-              <h3>DexKnot: Generalizable Visuomotor Policy Learning for Dexterous Bag-Knotting</h3>
-              <p class="venue">ICRA 2026</p>
-              <p>Jiayuan Zhang, Ruihai Wu, Haojun Chen, <strong>Yuran Wang</strong>, Yifan Zhong, Ceyao Zhang, Yaodong Yang, Yuanpei Chen</p>
+            </a>
+            <div class="publication-body">
+              <h3>GarmentPile: Point-Level Visual Affordance Guided Retrieval and Adaptation for Cluttered Garments Manipulation</h3>
+              <div class="publication-status">
+                <span class="venue">CVPR 2025</span>
+                <span class="publication-award"><span>IROS2025 · <strong>RAMODO Workshop · Best Poster Finalist</strong></span></span>
+              </div>
+              <p class="authors">Ruihai Wu*, Ziyu Zhu*, <strong class="author-self">Yuran Wang*</strong>, Yue Chen, Jiarui Wang, Hao Dong</p>
               <div class="publication-links">
-                <a href="https://arxiv.org/pdf/2603.07136" target="_blank" rel="noreferrer" aria-label="DexKnot arXiv paper">
+                <a href="https://arxiv.org/pdf/2503.09243" target="_blank" rel="noreferrer" aria-label="GarmentPile arXiv paper">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M7 3h7l5 5v13H7z"></path>
                     <path d="M14 3v5h5"></path>
@@ -440,54 +1094,14 @@
                   </svg>
                   Arxiv
                 </a>
-              </div>
-            </div>
-          </article>
-          <article class="mini-paper reveal">
-            <div class="mini-media image-mini-media sparse-meets-dense-media">
-              <img src="assets/Sparse_Meets_Dense.jpg" alt="Sparse Meets Dense project preview">
-            </div>
-            <div>
-              <h3>Sparse Meets Dense: Correspondence Guided Robotic Manipulation with Rigid-Deformable Interactions</h3>
-              <p class="venue">ICRA 2026</p>
-              <p>Ziyu Zhu, Ruihai Wu, Yue Chen, Xirui Liang, Hojin Bae, <strong>Yuran Wang</strong>, Hao Dong</p>
-              <div class="publication-links">
-                <a href="https://sparse-meets-dense.github.io/" target="_blank" rel="noreferrer" aria-label="Sparse Meets Dense project page">
-                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
-                    <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
-                  </svg>
-                  Project
-                </a>
-              </div>
-            </div>
-          </article>
-          <article class="mini-paper reveal">
-            <div class="mini-media image-mini-media adaptpnp-media">
-              <img src="assets/AdaptPnP.png" alt="AdaptPnP project preview">
-            </div>
-            <div>
-              <h3>AdaptPnP: Integrating Prehensile and Non-Prehensile Skills for Adaptive Robotic Manipulation</h3>
-              <p class="venue">ICRA 2026</p>
-              <p>Jinxuan Zhu, Chenrui Tie, Xinyi Cao, <strong>Yuran Wang</strong>, Jingxiang Guo, Zixuan Chen, Haonan Chen, Junting Chen, Yangyu Xiao, Ruihai Wu, Lin Shao</p>
-              <div class="publication-links">
-                <a href="https://arxiv.org/abs/2511.11052" target="_blank" rel="noreferrer" aria-label="AdaptPnP arXiv paper">
-                  <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M7 3h7l5 5v13H7z"></path>
-                    <path d="M14 3v5h5"></path>
-                    <path d="M9.8 16.5 12 10l2.2 6.5"></path>
-                    <path d="M10.5 14.2h3"></path>
-                  </svg>
-                  Arxiv
-                </a>
-                <a href="https://github.com/nolann030628/AdaptPNP.git" target="_blank" rel="noreferrer" aria-label="AdaptPnP GitHub repository">
+                <a href="https://github.com/AlwaySleepy/Garment-Pile" target="_blank" rel="noreferrer" aria-label="GarmentPile GitHub repository">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
                   Github
                 </a>
-                <a href="https://adaptpnp.github.io/" target="_blank" rel="noreferrer" aria-label="AdaptPnP project page">
+                <a href="https://garmentpile.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
                     <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
@@ -497,39 +1111,8 @@
               </div>
             </div>
           </article>
+
           <!--
-          <article class="mini-paper reveal">
-            <div class="mini-media"></div>
-            <div>
-              <h3>GraspAll: Adaptive Structural Compensation from Luminance Variation for Robotic Garment Grasping in Any Low-Light Conditions</h3>
-              <p>Haifeng Zhong, Wenshuo Han, Zhouyu Wang, Runyang Feng, Fan Tang, Tong-Yee Lee, Zipei Fan, Ruihai Wu, <strong>Yuran Wang</strong>, Hao Dong, Hechang Chen, Hyung Jin Chang, Yixing Gao</p>
-              <a href="https://dblp.org/search?q=GraspAll%20Adaptive%20Structural%20Compensation%20Luminance%20Variation" target="_blank" rel="noreferrer" aria-label="GraspAll publication link">
-                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 3h10v18H7z"></path>
-                  <path d="M10 8h4"></path>
-                  <path d="M10 12h4"></path>
-                  <path d="M10 16h2"></path>
-                </svg>
-                Publication
-              </a>
-            </div>
-          </article>
-          <article class="mini-paper reveal">
-            <div class="mini-media"></div>
-            <div>
-              <h3>FlatLab: A Unified Methodology Framework and Simulation-Based Benchmark for Robotic Manipulation of Flat Objects</h3>
-              <p>Xingyu Zhu, Wenshuo Han, Zhouyu Wang, <strong>Yuran Wang</strong>, Ruihai Wu, Hao Dong, Fan Tang, Hechang Chen, Hyung Jin Chang, Yixing Gao</p>
-              <a href="https://dblp.org/search?q=FlatLab%20Unified%20Methodology%20Framework%20Simulation-Based%20Benchmark" target="_blank" rel="noreferrer" aria-label="FlatLab publication link">
-                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 3h10v18H7z"></path>
-                  <path d="M10 8h4"></path>
-                  <path d="M10 12h4"></path>
-                  <path d="M10 16h2"></path>
-                </svg>
-                Publication
-              </a>
-            </div>
-          </article>
           <article class="mini-paper reveal">
             <div class="mini-media"></div>
             <div>
@@ -546,59 +1129,60 @@
               </a>
             </div>
           </article>
-          <article class="mini-paper reveal">
-            <div class="mini-media"></div>
-            <div>
-              <h3>AdaDexGrasp: Adaptive Dexterous Grasping via 3D Visuo-Tactile Representation Fusion</h3>
-              <p>Xirui Liang, Jingkai Xu, Ruochong Li, Jiaqi Liang, <strong>Yuran Wang</strong>, Yuanpei Chen, Masayoshi Tomizuka, Wei Zhan, Ruihai Wu</p>
-              <a href="https://dblp.org/search?q=AdaDexGrasp%20Adaptive%20Dexterous%20Grasping%203D%20Visuo-Tactile" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp publication link">
-                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M7 3h10v18H7z"></path>
-                  <path d="M10 8h4"></path>
-                  <path d="M10 12h4"></path>
-                  <path d="M10 16h2"></path>
-                </svg>
-                Publication
-              </a>
-            </div>
-          </article>
           -->
-          </div>
-        </details>
+        </div>
       </section>
 
-      <section id="experience" class="section-shell split-section">
+      <section id="experience" class="section-shell activities-section">
         <div class="section-heading reveal">
           <p class="eyebrow">Experience</p>
           <h2>Selected Activities</h2>
         </div>
         <div class="experience-list">
-          <article class="experience-card reveal">
-            <h3>LeHome Challenge @ ICRA 2026</h3>
-            <p>Organizer of the first simulation-driven competition on deformable object manipulation.</p>
-            <a href="https://lehome-challenge.com/" target="_blank" rel="noreferrer">Challenge Page</a>
+          <article class="experience-card reveal" data-activity="invited-talk">
+            <div class="activity-role">
+              <span class="activity-symbol">
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+                  <path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"></path>
+                </svg>
+              </span>
+              <span>Invited Talk</span>
+            </div>
+            <div class="activity-body">
+              <h3>Invited Talk on OpenWAM</h3>
+              <p>Presented OpenWAM at the GOAI forum, sharing an open, modular framework for systematic world-action model pretraining.</p>
+              <a href="https://mp.weixin.qq.com/s/5QSgOiFQLsLon73XGC-rjQ" target="_blank" rel="noreferrer" aria-label="OpenWAM invited talk details on WeChat">
+                Talk Details
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17 17 7M7 7h10v10"></path>
+                </svg>
+              </a>
+            </div>
           </article>
-          <article class="experience-card reveal">
-            <h3>Cambridge University Visiting</h3>
-            <p>Participated in a 14-day PBL course on system design and engineering thinking, with emphasis on product feasibility, user needs, and market characteristics.</p>
+          <article class="experience-card reveal" data-activity="challenge">
+            <div class="activity-role">
+              <span class="activity-symbol">
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 22V3M4 3c5-4 11 4 16 0v11c-5 4-11-4-16 0"></path>
+                </svg>
+              </span>
+              <span>Organizer</span>
+            </div>
+            <div class="activity-body">
+              <h3>LeHome Challenge @ ICRA 2026</h3>
+              <p>Organizer of the first simulation-driven competition on deformable object manipulation.</p>
+              <a href="https://lehome-challenge.com/" target="_blank" rel="noreferrer">
+                Challenge Page
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17 17 7M7 7h10v10"></path>
+                </svg>
+              </a>
+            </div>
           </article>
         </div>
       </section>
 
-      <section id="contact" class="section-shell contact-section reveal">
-        <p class="eyebrow">Contact</p>
-        <h2>Let’s Connect</h2>
-        <p>
-          I welcome conversations about embodied AI, robotic manipulation, simulation,
-          and generalizable policy learning.
-        </p>
-        <div class="contact-links">
-          <a href="mailto:yuranw0818@gmail.com">Email</a>
-          <a href="https://github.com/wayrise" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://scholar.google.com/citations?user=4DJfGOMAAAAJ" target="_blank" rel="noreferrer">Google Scholar</a>
-          <a href="assets/CV_WangYuran.pdf" target="_blank" rel="noreferrer">CV</a>
-        </div>
-      </section>
     </main>
 
     <footer class="site-footer">
