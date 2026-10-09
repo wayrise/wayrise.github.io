@@ -27,6 +27,26 @@ if ("ResizeObserver" in window) {
   window.addEventListener("resize", syncHeaderHeight);
 }
 
+// Keep the latest five updates visible; without JavaScript, all news is readable.
+const newsList = document.querySelector("#news-list");
+const newsToggle = document.querySelector("[data-news-toggle]");
+const newsToggleLabel = newsToggle?.querySelector("[data-news-toggle-label]");
+const olderNews = [...(newsList?.querySelectorAll(".news-item") || [])].slice(5);
+
+if (newsToggle && newsToggleLabel && olderNews.length) {
+  const setNewsExpanded = (expanded) => {
+    olderNews.forEach((item) => { item.hidden = !expanded; });
+    newsToggle.setAttribute("aria-expanded", String(expanded));
+    newsToggleLabel.textContent = expanded ? "Show less news" : "Show all news";
+  };
+
+  setNewsExpanded(false);
+  newsToggle.hidden = false;
+  newsToggle.addEventListener("click", () => {
+    setNewsExpanded(newsToggle.getAttribute("aria-expanded") !== "true");
+  });
+}
+
 // Content stays visible when JavaScript or IntersectionObserver is unavailable.
 if ("IntersectionObserver" in window && !reducedMotion.matches) {
   const revealObserver = new IntersectionObserver((entries) => {

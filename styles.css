@@ -382,6 +382,9 @@ h3 { color: var(--ink); font-size: 1.1rem; line-height: 1.4; font-weight: 600; }
 .news-item strong { color: var(--ink); font-weight: 600; }
 .news-tag { color: var(--accent); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; }
 .news-item .news-emphasis { color: #b23c38; }
+.news-toggle { display: flex; width: fit-content; gap: 8px; min-height: 44px; margin: 24px auto 0; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+.news-toggle .link-icon { width: 14px; height: 14px; transition: transform 180ms ease; }
+.news-toggle[aria-expanded="true"] .link-icon { transform: rotate(180deg); }
 .timeline { display: grid; margin-top: 12px; }
 .timeline-item { display: grid; grid-template-columns: 180px 1fr 76px; align-items: center; gap: 24px; padding: 30px 0; border-bottom: 1px solid var(--line); }
 .school-seal { width: 64px; height: 64px; object-fit: contain; justify-self: end; }
@@ -463,8 +466,8 @@ h3 { color: var(--ink); font-size: 1.1rem; line-height: 1.4; font-weight: 600; }
 .media-slot.roboverse-media { aspect-ratio: 8800 / 4230; }
 .media-slot.sparse-meets-dense-media { aspect-ratio: 1900 / 798; }
 .media-slot.adaptpnp-media { aspect-ratio: 5481 / 2420; }
-.media-slot.groundingpi-media { aspect-ratio: 2800 / 847; }
-.media-slot.groundanything-media { aspect-ratio: 2800 / 868; }
+.media-slot.groundingpi-media { aspect-ratio: 1800 / 1643; }
+.media-slot.groundanything-media { aspect-ratio: 1800 / 1647; }
 .media-slot.openwam-media { aspect-ratio: 2600 / 1029; }
 .media-slot.xpolicylab-media { aspect-ratio: 1600 / 670; }
 .media-slot.robodojo-media { aspect-ratio: 1024 / 766; }

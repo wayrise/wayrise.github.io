@@ -238,7 +238,7 @@
         <div class="section-heading section-heading-single reveal">
           <h2>News</h2>
         </div>
-        <div class="news-list">
+        <div id="news-list" class="news-list">
           <article class="news-item news-highlight reveal">
             <time datetime="2026-10">2026.10</time>
             <div>
@@ -291,6 +291,12 @@
             </div>
           </article>
         </div>
+        <button class="button news-toggle" type="button" data-news-toggle aria-expanded="false" aria-controls="news-list" hidden>
+          <span data-news-toggle-label>Show all news</span>
+          <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
       </section>
 
       <section id="education" class="section-shell">
@@ -341,7 +347,7 @@
         <div id="publication-list" class="publication-grid">
           <article class="publication-card is-selected reveal" data-selected="true">
             <a class="media-slot image-media groundingpi-media" href="https://groundingpi.github.io/" target="_blank" rel="noreferrer" aria-label="GroundingPI project page">
-              <img src="assets/GroundingPI.png" width="2800" height="847" alt="GroundingPI project overview" loading="lazy" decoding="async">
+              <img src="assets/GroundingPI.jpg" width="1800" height="1643" alt="GroundingPI project overview" loading="lazy" decoding="async">
             </a>
             <div class="publication-body">
               <h3>GroundingPI: A Grounding Foundation Model towards Physical Intelligence with Visual Primitives</h3>
@@ -380,7 +386,7 @@
 
           <article class="publication-card reveal" data-selected="false">
             <a class="media-slot image-media groundanything-media" href="https://groundingpi.github.io/groundanything/" target="_blank" rel="noreferrer" aria-label="GroundAnything project page">
-              <img src="assets/GroundAnything.png" width="2800" height="868" alt="GroundAnything parallel decoding and visual grounding architecture" loading="lazy" decoding="async">
+              <img src="assets/GroundAnything.jpg" width="1800" height="1647" alt="GroundAnything parallel decoding and visual grounding architecture" loading="lazy" decoding="async">
             </a>
             <div class="publication-body">
               <h3>GroundAnything: Reconciling Parallel Decoding with Precise Visual Grounding at Flash Speed</h3>
