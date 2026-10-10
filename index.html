@@ -61,15 +61,31 @@
       <button class="opening-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
     </div>
     <script>
-      (() => {
+      (async () => {
         const opening = document.querySelector("[data-opening]");
         if (!opening) return;
+
+        // Address-bar prerendering and background tabs are hidden before activation.
+        // Start the animation and its timers only when the visitor can see the page.
+        if (document.prerendering || document.hidden) {
+          await new Promise((resolve) => {
+            const whenVisible = () => {
+              if (document.prerendering || document.hidden) return;
+              document.removeEventListener("prerenderingchange", whenVisible);
+              document.removeEventListener("visibilitychange", whenVisible);
+              resolve();
+            };
+            document.addEventListener("prerenderingchange", whenVisible);
+            document.addEventListener("visibilitychange", whenVisible);
+            whenVisible();
+          });
+        }
 
         const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
         const navigation = window.performance.getEntriesByType("navigation")[0];
         // Direct section links and history navigation should go straight to the content.
         if (motion.matches || window.location.hash || window.scrollY > 0
-            || navigation?.type === "back_forward" || document.hidden) {
+            || navigation?.type === "back_forward") {
           opening.remove();
           return;
         }
@@ -371,7 +387,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://groundingpi.github.io/" target="_blank" rel="noreferrer" aria-label="GroundingPI project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -409,7 +425,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://groundingpi.github.io/groundanything/" target="_blank" rel="noreferrer" aria-label="GroundAnything project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -448,7 +464,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://openwam-official.github.io/" target="_blank" rel="noreferrer" aria-label="OpenWAM project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -493,7 +509,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://xpolicylab.github.io/" target="_blank" rel="noreferrer" aria-label="XPolicyLab project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -538,7 +554,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://robodojo-benchmark.com/" target="_blank" rel="noreferrer" aria-label="RoboDojo project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -608,7 +624,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://xirui1208.github.io/AdaDexGrasp/" target="_blank" rel="noreferrer" aria-label="AdaDexGrasp project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -647,7 +663,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://skywalker-yqz.github.io/AffordanceVLA/" target="_blank" rel="noreferrer" aria-label="AffordanceVLA project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -717,7 +733,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://rmbench.github.io/" target="_blank" rel="noreferrer" aria-label="RMBench project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -755,7 +771,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
               </div>
             </div>
@@ -811,7 +827,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Code
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://yzmyalier.github.io/HeteroGenManip/" target="_blank" rel="noreferrer" aria-label="HeteroGenManip project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -851,7 +867,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://garmentpile2.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile++ project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -892,7 +908,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://lehome-web.github.io/" target="_blank" rel="noreferrer" aria-label="LeHome project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -978,7 +994,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://adaptpnp.github.io/" target="_blank" rel="noreferrer" aria-label="AdaptPnP project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -1017,7 +1033,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://wayrise.github.io/DexGarmentLab/" target="_blank" rel="noreferrer" aria-label="DexGarmentLab project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -1055,7 +1071,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://roboverseorg.github.io/" target="_blank" rel="noreferrer" aria-label="RoboVerse project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -1105,7 +1121,7 @@
                     <path d="M9 19c-4 1.2-4-2-5.5-2.4"></path>
                     <path d="M15 22v-3.4c0-1 .1-1.4-.5-2 2-.2 4.1-1 4.1-4.6 0-1-.4-1.9-1-2.6.1-.3.4-1.3-.1-2.6 0 0-.8-.3-2.7 1a9.1 9.1 0 0 0-5 0c-1.9-1.3-2.7-1-2.7-1-.5 1.3-.2 2.3-.1 2.6a3.8 3.8 0 0 0-1 2.6c0 3.6 2.1 4.4 4.1 4.6-.4.4-.6.8-.6 1.6V22"></path>
                   </svg>
-                  Github
+                  <span class="github-label">GitHub<span data-github-stars hidden></span></span>
                 </a>
                 <a href="https://garmentpile.github.io/" target="_blank" rel="noreferrer" aria-label="GarmentPile project page">
                   <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -1196,6 +1212,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="github-stars.js"></script>
     <script src="dot-background.js"></script>
   </body>
 </html>
