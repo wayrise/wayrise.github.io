@@ -597,6 +597,8 @@ h3 { color: var(--ink); font-size: 1.1rem; line-height: 1.4; font-weight: 600; }
 .experience-card a:hover { color: var(--accent-ink); text-decoration: underline; }
 .experience-card a .link-icon { transition: transform 180ms ease; }
 .experience-card a:hover .link-icon { transform: translate(2px, -2px); }
+.activity-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: auto; }
+.activity-links a { margin-top: 0; }
 .site-footer { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 28px 0 36px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; }
 .site-footer p { margin: 0; }
 .reveal { transition: opacity 600ms ease, transform 600ms ease; }
